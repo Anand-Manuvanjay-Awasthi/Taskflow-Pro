@@ -31,3 +31,17 @@ Planned capabilities (implemented incrementally, logged here as they land):
   persisted.
 - The LLM has no direct database access and cannot bypass cycle checks, validation, or the
   scheduling engine — it can only call the same validated tool/API layer the UI uses.
+
+## Update — dependency suggestion endpoint
+
+- `POST /api/ai/tasks/:id/suggest-dependencies` implemented. Model output is
+  schema-validated (zod), retried once on malformed JSON with the error fed
+  back to the model, and falls back to a clear "no suggestion" message if it
+  still fails — the request never 500s or silently no-ops on a bad LLM
+  response.
+- Every candidate edge is independently re-checked against the real
+  `wouldCreateCycle` logic and existing-dependency check before being
+  returned; the model's own claims about the graph are never trusted as-is.
+- Limitation: suggestions are heuristic (based on task title/description
+  text) and are not persisted automatically — a human must confirm before
+  the edge is created via the normal `POST /api/dependencies` endpoint.
