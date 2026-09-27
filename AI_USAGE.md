@@ -45,3 +45,32 @@ Planned capabilities (implemented incrementally, logged here as they land):
 - Limitation: suggestions are heuristic (based on task title/description
   text) and are not persisted automatically — a human must confirm before
   the edge is created via the normal `POST /api/dependencies` endpoint.
+
+## Final pass — full feature summary
+
+All three product-facing AI capabilities are implemented and tested with a mocked Anthropic
+client (no real network calls in the test suite):
+
+1. Dependency suggestion (`POST /api/ai/tasks/:id/suggest-dependencies`)
+2. Pre-Commit Impact Investigator (`POST /api/ai/investigate`) — tool-calling agent loop, bounded
+   to 6 rounds, that must call `simulateScheduleChange` and friends rather than inventing impact
+   numbers.
+3. Semantic-Structural Drift Detector (`GET /api/ai/drift-report`)
+
+Development-assistance summary: this entire repository (DAG engine, Workflow API, AI tool layer,
+AI endpoints, React/Tailwind UI, and all tests) was written by Claude (Sonnet 5) executing a
+detailed master build prompt supplied by the developer, who reviewed and directed the work
+commit-by-commit rather than accepting one large unreviewed dump. No part of the codebase was
+generated and left unreviewed; algorithmic correctness (cycle detection, no-compounding diamond
+propagation, rollback) was specifically checked via the unit and integration test suite before
+each relevant commit.
+
+Final known limitations (see also README.md):
+- AI suggestions (dependency + drift) are heuristic, grounded against the real DAG engine before
+  being shown, but still require a human to click "confirm" before anything is persisted.
+- The Impact Investigator trusts tool outputs, not its own arithmetic, but its natural-language
+  question parsing can still misinterpret an ambiguous "what if" question — the tool-call trace is
+  shown in the UI so this is auditable.
+- No secrets, real credentials, or production data exist anywhere in this repository or its
+  history; `ANTHROPIC_API_KEY` is read from an environment variable and is never logged or
+  returned by any endpoint.
