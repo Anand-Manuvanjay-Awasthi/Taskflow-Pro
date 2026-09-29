@@ -13,3 +13,5 @@ build/
 *.sqlite
 *.sqlite3
 coverage/
+target/
+server/data/
