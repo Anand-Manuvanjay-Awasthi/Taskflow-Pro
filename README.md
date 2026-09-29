@@ -9,6 +9,10 @@ The backend is a Java 21 / Spring Boot 3.4 application. The React/Vite client
 continues to use the same `/api` contract and proxies development traffic to
 port 3001.
 
+## Architecture 
+<img width="942" height="635" alt="image" src="https://github.com/user-attachments/assets/4d8ac00a-c4c4-44a8-abe4-7f4284adffa8" />
+
+
 ## Run locally
 
 Prerequisites: JDK 21+ and Maven 3.9+ (Node.js 20+ for the client).
